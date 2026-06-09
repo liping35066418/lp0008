@@ -13,14 +13,19 @@ export default function Home() {
   useEffect(() => {
     const loadStats = async () => {
       try {
-        const stats = await fetchStats();
-        setStats(stats);
+        const serverStats = await fetchStats();
+        const { stats: localStats, setStats } = useGameStore.getState();
+        const mergedStats = {
+          ...localStats,
+          bestStreak: Math.max(localStats.bestStreak, serverStats.bestStreak),
+        };
+        setStats(mergedStats);
       } catch (error) {
         console.error('Failed to load stats:', error);
       }
     };
     loadStats();
-  }, [setStats]);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">

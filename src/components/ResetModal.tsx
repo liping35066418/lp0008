@@ -4,7 +4,7 @@ import { RotateCcw, X } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ResetModal() {
-  const { showResetModal, setShowResetModal, setStats, setPhase, setPlayerChoice, setComputerChoice, setLastResult } =
+  const { showResetModal, setShowResetModal, resetGame } =
     useGameStore();
   const [isResetting, setIsResetting] = useState(false);
 
@@ -17,13 +17,8 @@ export default function ResetModal() {
   const handleConfirm = async () => {
     setIsResetting(true);
     try {
-      const response = await resetStats();
-      setStats(response.stats);
-      setPhase('idle');
-      setPlayerChoice(null);
-      setComputerChoice(null);
-      setLastResult(null);
-      setShowResetModal(false);
+      await resetStats();
+      resetGame();
     } catch (error) {
       console.error('Reset failed:', error);
     } finally {
