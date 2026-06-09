@@ -11,7 +11,13 @@ interface GameState {
   stats: GameStats;
   isLoading: boolean;
   showResetModal: boolean;
-  statsAnimating: { wins: boolean; losses: boolean; draws: boolean };
+  statsAnimating: {
+    wins: boolean;
+    losses: boolean;
+    draws: boolean;
+    currentStreak: boolean;
+    maxStreak: boolean;
+  };
 
   setPhase: (phase: GamePhase) => void;
   setPlayerChoice: (choice: Choice | null) => void;
@@ -20,7 +26,10 @@ interface GameState {
   setStats: (stats: GameStats) => void;
   setIsLoading: (loading: boolean) => void;
   setShowResetModal: (show: boolean) => void;
-  setStatsAnimating: (key: keyof GameStats, animating: boolean) => void;
+  setStatsAnimating: (
+    key: keyof GameState['statsAnimating'],
+    animating: boolean,
+  ) => void;
 
   applyPlayResult: (response: PlayResponse) => void;
   resetGame: () => void;
@@ -30,6 +39,8 @@ const initialStats: GameStats = {
   wins: 0,
   losses: 0,
   draws: 0,
+  currentStreak: 0,
+  maxStreak: 0,
 };
 
 export const useGameStore = create<GameState>((set) => ({
@@ -40,7 +51,13 @@ export const useGameStore = create<GameState>((set) => ({
   stats: initialStats,
   isLoading: false,
   showResetModal: false,
-  statsAnimating: { wins: false, losses: false, draws: false },
+  statsAnimating: {
+    wins: false,
+    losses: false,
+    draws: false,
+    currentStreak: false,
+    maxStreak: false,
+  },
 
   setPhase: (phase) => set({ phase }),
   setPlayerChoice: (playerChoice) => set({ playerChoice }),
@@ -77,6 +94,26 @@ export const useGameStore = create<GameState>((set) => ({
       setTimeout(() => useGameStore.getState().setStatsAnimating('draws', true), 0);
       setTimeout(() => useGameStore.getState().setStatsAnimating('draws', false), 500);
     }
+    if (response.stats.currentStreak !== prevStats.currentStreak) {
+      setTimeout(
+        () => useGameStore.getState().setStatsAnimating('currentStreak', true),
+        0,
+      );
+      setTimeout(
+        () => useGameStore.getState().setStatsAnimating('currentStreak', false),
+        500,
+      );
+    }
+    if (response.stats.maxStreak !== prevStats.maxStreak) {
+      setTimeout(
+        () => useGameStore.getState().setStatsAnimating('maxStreak', true),
+        0,
+      );
+      setTimeout(
+        () => useGameStore.getState().setStatsAnimating('maxStreak', false),
+        500,
+      );
+    }
   },
 
   resetGame: () =>
@@ -88,6 +125,12 @@ export const useGameStore = create<GameState>((set) => ({
       stats: initialStats,
       isLoading: false,
       showResetModal: false,
-      statsAnimating: { wins: false, losses: false, draws: false },
+      statsAnimating: {
+        wins: false,
+        losses: false,
+        draws: false,
+        currentStreak: false,
+        maxStreak: false,
+      },
     }),
 }));

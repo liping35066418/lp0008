@@ -6,6 +6,8 @@ export interface GameStats {
   wins: number;
   losses: number;
   draws: number;
+  currentStreak: number;
+  maxStreak: number;
 }
 
 export interface PlayRequest {
